@@ -1,14 +1,16 @@
 import type { CTX, USER } from "./types";
+import { Credentials } from "./types"
 import { z } from "zod";
+import type { types } from ".";
 
-export function getAccount(ctx: CTX): USER | null {
-  if (import.meta.env.DEV)
-    return {
-      id: "1",
-      email: "test@test.com",
-      name: "testName",
-    };
-  // !todo
+const DEV_USER = {id: "", email: "", name: "test"}
+
+// on each request this will check the context and return a user if user has been authenticated
+export function getAccountFromCtx(ctx: CTX): USER | null {
+  console.log(ctx)
+  if (isDev())
+    return DEV_USER;
+  // !todo ?? not sure if tauri and web need different checks
   return null;
 }
 
@@ -29,3 +31,31 @@ export function checkIfPathIsAllowed(ctx: CTX): boolean {
   }
   return false;
 }
+
+// login a user returning a tuple with any failure and user
+export const loginUser: (email:string, password:string) => readonly [boolean, types.USER]  = (email, password) => {
+  let failure = false
+  let user = {id: "", email: "", name: ""}
+  try {
+    if (isDev()) {
+      user = DEV_USER
+    }
+
+    if(email === "" || password === "") throw new Error("Email or password is empty")
+    
+    const {id, password: pass} = Credentials.parse({id:email, password})
+     // axios/tauri call
+    if (window.__TAURI__){
+      // !todo
+    }else {
+      // !todo
+    }
+  } catch (error) {
+    // !todo log error
+    // console.error(error)
+    failure = !isDev()
+  }
+  return [failure, user] as const
+}
+
+export const isDev = () => import.meta.env.VITE_DEV === "true";
