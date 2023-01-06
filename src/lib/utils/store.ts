@@ -9,7 +9,7 @@ const unSubtoAccount = AccountWritable.subscribe((value) => {
 })
 export const Account = {
     subscribe: AccountWritable.subscribe,
-    loggedIn: () => accountStore.user.id,
+    loggedIn: () => !!accountStore.user.id,
     loadUser: (user:types.USER) => {
         AccountWritable.update((value) => {
             return {...value, user}

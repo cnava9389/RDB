@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import * as auth from "$lib/utils/auth";
 import type { CTX } from "$lib/utils/types";
 
