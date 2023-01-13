@@ -3,7 +3,7 @@ import type { HandleClientError } from "@sveltejs/kit";
 export const handleError = (({ error, event }) => {
   const errorId = crypto.randomUUID();
   // implement actual error logging here
-  console.warn("Error ID:", errorId, "\nerror:", error);
+  console.error("Error ID:", errorId, "\nerror:", error);
 
   return {
     message: "Whoops!",

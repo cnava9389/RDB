@@ -5,12 +5,35 @@ import type { types } from ".";
 
 const DEV_USER = { id: "", email: "", name: "test" };
 
+const SERVER = `http://${import.meta.env.VITE_SERVER_HOST}:${
+  import.meta.env.VITE_SERVER_PORT
+}`;
+
+export const useFetch = (
+  url: string,
+  opts?: {
+    method?: RequestInit["method"];
+    body?: Record<string | number, unknown>;
+  }
+) => {
+  return fetch(`${SERVER}${url}`, {
+    ...opts,
+    body: opts && "body" in opts ? JSON.stringify(opts.body) : undefined,
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      "Content-type": "application/json; charset=UTF-8",
+    },
+    credentials: "include",
+  });
+};
 // on each request this will check the context and return a user if user has been authenticated
-export function getAccountFromCtx(ctx: CTX): USER | null {
-  console.log(ctx);
+export async function getAccountFromCtx(ctx: CTX): Promise<USER | null> {
   if (isDev()) return DEV_USER;
   // !todo
-  return null;
+  const res = await useFetch("/auth/account", { method: "GET" });
+  if (!res.ok) return null;
+  const user = await res.json();
+  return user;
 }
 
 const publicPaths = ["/login", "/register", "/forgot-password"];
@@ -35,24 +58,34 @@ export function checkIfPathIsAllowed(ctx: CTX): boolean {
 export const loginUser: (
   email: string,
   password: string
-) => readonly [boolean, types.USER] = (email, password) => {
+) => Promise<readonly [boolean, types.USER]> = async (email, password) => {
   let failure = false;
   let user = { id: "", email: "", name: "" };
+
+  if (isDev()) {
+    user = DEV_USER;
+  }
+
+  if (email === "" || password === "") return [true, user] as const;
+
   try {
-    if (isDev()) {
-      user = DEV_USER;
+    const { id, password: pass } = isDev()
+      ? { id: email, password }
+      : Credentials.parse({ id: email, password });
+
+    const res = await useFetch("/auth/login", {
+      method: "POST",
+      body: { id, password: pass },
+    });
+    if (!res.ok) {
+      console.error(res.statusText);
+      failure = true;
+    } else {
+      user = await res.json();
     }
-
-    if (email === "" || password === "")
-      throw new Error("Email or password is empty");
-
-    const { id, password: pass } = Credentials.parse({ id: email, password });
-    // axios call
-    // !todo
   } catch (error) {
-    // !todo log error
-    // console.error(error)
-    failure = !isDev();
+    console.error(error);
+    failure = true;
   }
   return [failure, user] as const;
 };
