@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
     import { page } from '$app/stores'
+    import { Container } from '$lib/components'
 </script>
-<div>
+<Container>
     Error: {$page.error?.message}
-</div>
+</Container>

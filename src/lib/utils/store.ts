@@ -1,23 +1,58 @@
-import { writable } from "svelte/store"
-import type { types } from "."
+import { writable } from "svelte/store";
+import { range, type types } from ".";
 
-type AccountStore = {user:types.USER}
-let accountStore: AccountStore = {user: {id: "", email: "", name: ""}}
-const AccountWritable = writable<AccountStore>({...accountStore})
+let accountStore: types.AccountStore = {
+  user: { id: "", email: "", name: "" },
+  dbs: {},
+  loggedIn: false,
+};
+const AccountWritable = writable<types.AccountStore>({ ...accountStore });
 const unSubtoAccount = AccountWritable.subscribe((value) => {
-    accountStore = value
-})
+  accountStore = value;
+});
+
 export const Account = {
-    subscribe: AccountWritable.subscribe,
-    loggedIn: () => !!accountStore.user.id,
-    loadUser: (user:types.USER) => {
-        AccountWritable.update((value) => {
-            return {...value, user}
-        })
-    },
-    unLoadUser: () => {
-        AccountWritable.update((value) => {
-            return {...value, user: {id: "", email: "", name: ""}}
-        })
-    }
-}
+  subscribe: AccountWritable.subscribe,
+  loggedIn: () => !!accountStore.user.id,
+  loadUser: (data: Pick<types.AccountStore, "dbs" | "user">) => {
+    AccountWritable.update((value) => {
+      return { ...value, user: data.user, dbs: data.dbs, loggedIn: true };
+    });
+  },
+  unLoadUser: () => {
+    AccountWritable.update((value) => {
+      return {
+        ...value,
+        user: { id: "", email: "", name: "" },
+        dbs: {},
+        loggedIn: false,
+      };
+    });
+  },
+  loadDbs: (dbs: Array<readonly [string, string]>) => {
+    AccountWritable.update((value) => {
+      const { dbs: map } = value;
+      for (const i of range(dbs.length)) {
+        map[dbs[i][0]] = dbs[i][1];
+      }
+      return { ...value, dbs: map };
+    });
+  },
+};
+
+let uiStore: types.UIState = {
+  isSideNavOpen: false,
+};
+
+const UIWritable = writable<types.UIState>({ ...uiStore });
+const unSubtoUI = UIWritable.subscribe((value) => {
+  uiStore = value;
+});
+export const UI = {
+  subscribe: UIWritable.subscribe,
+  toggleSideNav: () => {
+    UIWritable.update((value) => {
+      return { ...value, isSideNavOpen: !value.isSideNavOpen };
+    });
+  },
+};

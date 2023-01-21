@@ -8,11 +8,8 @@ import { goto } from "$app/navigation";
 
 export const load = (async (ctx) => {
   // get the user from the session
-  const user = auth.getAccountFromCtx(ctx);
+  const [error, data] = await auth.getAccountFromCtx();
   // if there's no user and page isnt allowed, redirect to /login
-  if (!user && !auth.checkIfPathIsAllowed(ctx)) return await goto("/login");
-  if (user) store.Account.loadUser(user);
-  return {
-    user,
-  };
+  if (error && !auth.checkIfPathIsAllowed(ctx)) return await goto("/login");
+  if (!error) store.Account.loadUser(data);
 }) satisfies LayoutLoad;

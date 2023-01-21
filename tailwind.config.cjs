@@ -20,9 +20,14 @@ module.exports = {
           "0%": { transform: "translateX(-100%)", opacity: 0 },
           "100%": { transform: "translateX(0)", opacity: 1, display: "flex" },
         },
+        initial: {
+          "0%": { opacity: 0, display: "none" },
+          "100%": { opacity: 1, display: "flex" },
+        },
       },
       animation: {
-        bounce: "bounce .1s ease-in-out",
+        initial: "initial 1s ease-in-out fowards",
+        bounce: "bounce .25s ease-in-out",
         leaveLeft: "leaveLeft .75s ease-in-out forwards",
         enterLeft: "enterLeft .75s ease-in-out forwards",
       },

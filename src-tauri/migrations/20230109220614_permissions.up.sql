@@ -1,0 +1,8 @@
+-- Add up migration script here
+CREATE TABLE IF NOT EXISTS Permissions (
+    id BLOB PRIMARY KEY UNIQUE NOT NULL,
+    read BLOB NOT NULL,
+    write BLOB NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
