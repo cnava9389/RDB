@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { LayoutLoad } from "../../routes/$types";
 
 export const User = z.object({
-  id: z.string().uuid(),
+  id: z.string().uuid().optional(),
   name: z.string().min(4).max(64).trim(),
   email: z.string().email(),
 });
@@ -26,6 +26,12 @@ export type USER = z.infer<typeof User>;
 
 export type CTX = Parameters<LayoutLoad>[0];
 
+export type AccountStore = {
+  user: USER;
+  dbs: Record<string, string>;
+  loggedIn: boolean;
+};
+
 ///////////////////////////////////////// ui
 
 export type Input = {
@@ -33,6 +39,7 @@ export type Input = {
   placeholder: string;
   className: string;
   name: string;
+  required: boolean;
 };
 
 export type Button = {
@@ -63,10 +70,28 @@ export const colors: Record<Colors, string> = {
   yellow: "bg-yellow-700 hover:bg-yellow-500",
 };
 
-export type Icons = "" | "add" | "question";
+export type Icons =
+  | ""
+  | "add"
+  | "question"
+  | "menu"
+  | "home"
+  | "close"
+  | "settings"
+  | "warning"
+  | "error"
+  | "login"
+  | "logout"
+  | "connections"
+  | "upload"
+  | "password";
 
 type EventHandler<E extends Event = Event, T extends EventTarget = Element> = (
   event: E & { currentTarget: EventTarget & T }
 ) => any;
 
 export type FormEventHandler = EventHandler<Event, HTMLFormElement>;
+
+export type UIState = {
+  isSideNavOpen: boolean;
+};
