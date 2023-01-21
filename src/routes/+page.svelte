@@ -1,9 +1,10 @@
 <script lang='ts'>
 import {store} from '$lib/utils'
+import { Container } from '$lib/components';
 const {Account} = store
 </script>
 
-<div class="flex flex-col justify-center items-center h-full">
+<Container>
   <p>Hello, world!, {$Account.user.name}</p>
   <a href="/login"> login</a>
-</div>
+</Container>

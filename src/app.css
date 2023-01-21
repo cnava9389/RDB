@@ -21,6 +21,45 @@
   }
 }
 
+@media screen and (max-width: 640px) {
+  .vl {
+    border-top: 2px solid rgb(105, 105, 105);
+    /* border-left: none;
+    border-radius: 2px;
+    width: 500px; */
+  }
+}
+
+.cut {
+  position: relative;
+}
+
+.cut:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-top: 30px solid #2f2f2f;
+  border-left: 30px solid;
+}
+
+.vl {
+  border-left: 2px solid rgb(105, 105, 105);
+  border-radius: 2px;
+  height: 500px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hideScroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hideScroll {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
