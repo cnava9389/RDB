@@ -1,7 +1,7 @@
 use actix_web::{web, App, HttpServer, Responder, http};
 use actix_cors::Cors;
 use dotenv;
-use std::sync::RwLock;
+use tauri::async_runtime::RwLock;
 
 pub mod public;
 
@@ -10,12 +10,13 @@ async fn not_found() -> impl Responder {
 }
 
 #[actix_web::main]
-pub async fn start_server(host: &str, port: &str) -> Result<(), sqlx::Error> {
-    let admin_db = crate::db::setup_db().await?;
+pub async fn start_server(host: &str, port: &str) -> Result<(), actix_web::Error> {
+    crate::db::setup_db().await?;
     let app_state = web::Data::new(crate::models::AppState {
-            admin_db: admin_db.clone(),
+            admin_db: RwLock::new(crate::models::db::Db::new(dotenv::var("DATABASE_URL").unwrap_or_default()).await?),
             config: crate::models::config::Config::new(),
             tokens: RwLock::new(std::collections::HashMap::new()),
+            cache: RwLock::new(std::collections::HashMap::new()),
         });
 
     println!("Starting server on {}:{}", host, port);

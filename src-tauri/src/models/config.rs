@@ -1,5 +1,5 @@
 use uuid;
-use crate::models::Pool;
+use crate::models::LitePool as Pool;
 use sqlx;
 
 #[derive(sqlx::FromRow)]
